@@ -1,1 +1,1 @@
-git://git.openpandora.org/xserver-xorg-video-fbturbo.git master
+git://git.openpandora.org/xserver-xorg-video-fbturbo.git

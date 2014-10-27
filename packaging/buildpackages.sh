@@ -1,30 +1,27 @@
 #!/bin/bash
 # Script to clone / update GITs according to a text-file
 # and build Debian-Packages from them as well as sort them into the repository
-# 2014-10-08 V1 by Michael Mrozek (EvilDragon)
+# 2014-10-27 V1.1 by Michael Mrozek (EvilDragon)
 #
 
 # Setup some Env-Vars
 
-builddir="/srv/www/vhosts/domains/packages.pyra-handheld.com/build"
-gitlist="/srv/www/vhosts/domains/packages.pyra-handheld.com/build/packages.txt"
-repodir="/srv/www/vhosts/domains/packages.pyra-handheld.com/httpdocs/debian"
-logdir="/srv/www/vhosts/domains/packages.pyra-handheld.com/httpdocs/buildlogs"
+builddir="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/build"
+gitlist="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/build/packages.txt"
+repodir="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/httpdocs/debian"
+logdir="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/httpdocs/buildlogs"
+
+# Update rootfs if needed
+ARCH=armhf DIST=testing git-pbuilder update
 
 # Package-Build-Loop
 while read file          
 do           
 
-  url="$(echo $file | awk '{print $1}')"
-  branch="$(echo $file | awk '{print $2}')"
+  url="$(echo $file)"
   
   # Clean old stuff
-  rm "$builddir/*.build"
-  rm "$builddir/*.changes"
-  rm "$builddir/*.dsc"
-  rm "$builddir/*.deb"
-  rm "$builddir/*.diff.gz"
-  rm "$builddir/*.tar.*"
+  rm -R "$builddir/tmp/"
   build=false
   
   # Read the GIT URL
@@ -34,22 +31,19 @@ do
   if [ ! -d "$builddir/$gitdir" ]; then
     # Clone it!
     echo New Package! - Cloning $url
-    git clone $url 
+    gbp-clone $url 
     build=true
   else
     # Otherwise: Update the GIT.
     echo Update GIT
-    cd "$builddir/$gitdir"
-    git fetch
-    
-    # Change to the specified branch
-    git checkout $branch
-    
     # Check if the package needs to be rebuilt
-    update="$(git rebase origin | grep "is up to date")"
+	cd "$builddir/$gitdir"
+    update="$(gbp-pull | grep "up to date")"
     if [ -n "$update" ]; then
+	echo No update - building package not needed.
       build=false
     else
+	echo Package will be updated!
       build=true
     fi
   fi  
@@ -61,18 +55,22 @@ do
     # Get package name
     package="$(head -1 "${builddir}/${gitdir}/debian/control" | awk '{print $NF}')"
   
+     echo Building Package: $package
+
      # Build the source and binary packages!
      cd "$builddir/$gitdir"
-     sbuild -d jessie-pyra -c jessie-armhf --arch=armhf --arch-all --source
+     git-buildpackage
  
+     echo Putting package into repository.
+
      # Put it into the repository
  
-     cd "$builddir"
+     cd "$builddir/tmp"
      name="$(ls *.changes)"
      reprepro -V -b "$repodir" include jessie-pyra $name
     
      # Move the build log files into the build-log-dir
-     mv "$builddir/*.build" "$logdir/"
+     mv "$builddir"/tmp/*.build "$logdir"
     
   fi
 
