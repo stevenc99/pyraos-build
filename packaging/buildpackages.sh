@@ -10,9 +10,7 @@ builddir="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/b
 gitlist="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/build/packages.txt"
 repodir="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/httpdocs/debian"
 logdir="/srv/www/vhosts/pyra-handheld.com/domains/packages.pyra-handheld.com/httpdocs/buildlogs"
-
-# Update rootfs if needed
-ARCH=armhf DIST=testing git-pbuilder update
+update=true
 
 # Package-Build-Loop
 while read file          
@@ -22,6 +20,7 @@ do
   
   # Clean old stuff
   rm -R "$builddir/tmp/"
+  mkdir "$builddir/tmp"
   build=false
   
   # Read the GIT URL
@@ -51,7 +50,13 @@ do
   # Build if Package is updated
   
   if [ "$build" == true ]; then
-  
+    
+    if [ $update == true ]; then
+      # Update rootfs if needed
+      ARCH=armhf DIST=testing git-pbuilder update
+      update=false
+    fi
+    
     # Get package name
     package="$(head -1 "${builddir}/${gitdir}/debian/control" | awk '{print $NF}')"
   
