@@ -1,1 +1,4 @@
 git://git.openpandora.org/xserver-xorg-video-fbturbo.git
+git://git.openpandora.org/pyra-meta.git
+git://git.openpandora.org/pyra-config.git
+
