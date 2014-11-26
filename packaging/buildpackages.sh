@@ -70,7 +70,7 @@ do
 
      	# Build the source and binary packages!
      	cd "$builddir/$gitdir"
-     	git-buildpackage
+     	git-buildpackage --git-ignore-new
 
      	echo Putting package into repository.
 
@@ -78,7 +78,7 @@ do
 
      	cd "$builddir/tmp"
      	name="$(ls *.changes)"
-     	reprepro -V -b "$repodir" include jessie-pyra $name
+     	reprepro --ignore=missingfile -V -b "$repodir" include jessie-pyra $name
 
      	# Move the build log files into the build-log-dir
      	mv "$builddir"/tmp/*.build "$logdir"
