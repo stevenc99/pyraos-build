@@ -78,7 +78,7 @@ do
 
      	cd "$builddir/tmp"
      	name="$(ls *.changes)"
-     	reprepro --ignore=missingfile -V -b "$repodir" include jessie-pyra $name
+     	reprepro -V -b "$repodir" include jessie-pyra $name
 
      	# Move the build log files into the build-log-dir
      	mv "$builddir"/tmp/*.build "$logdir"
