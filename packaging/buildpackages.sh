@@ -46,7 +46,7 @@ do
     		build=true
   	else
     		# Otherwise: Update the GIT.
-    		echo Update GIT
+    		echo Update GIT $gitdir
     		# Check if the package needs to be rebuilt
 		cd "$builddir/$gitdir"
     		update="$(gbp-pull | grep "up to date")"
