@@ -92,4 +92,4 @@ sync
 
 # reboot
 #shutdown -rn now
-reboot --force --verbose
+reboot --force
