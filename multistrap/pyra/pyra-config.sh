@@ -74,7 +74,7 @@ $user_pass
 $user_pass
 EOF
 
-adduser $user_name sudo
+usermod -a -G sudo,audio,bluetooth,plugdev $user_name
 
 # set hostname
 echo $hostname > /etc/hostname
@@ -86,6 +86,9 @@ systemctl enable serial-getty@ttyO2.service
 
 # if kernel kernel modules weren't installed from a package
 depmod -a 
+
+# run first-run-wizard at next boot
+rm /var/lib/pyra/first-run.done
 
 # make sure everything is written to filesystem
 sync
