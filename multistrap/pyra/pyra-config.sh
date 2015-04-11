@@ -43,10 +43,10 @@ dpkg --force-configure-any --configure dpkg
 dpkg --force-configure-any --configure perl-base
 dpkg --force-configure-any --configure debconf
 dpkg --force-configure-any --configure apt
-
+dpkg --force-configure-any --configure eatmydata
 # apt can handle things from here
-
-apt-get -f install
+# using eatmydata makes installing a few minutes faster
+eatmydata apt-get -f install
 
 # used to be 
 #dpkg --configure -a
