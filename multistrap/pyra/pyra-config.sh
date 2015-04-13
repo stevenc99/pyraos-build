@@ -69,12 +69,14 @@ EOF
 
 #create a normal user
 
-adduser --gecos "" $user_name << EOF
-$user_pass
-$user_pass
-EOF
+# moved to first-run
 
-usermod -a -G sudo,audio,bluetooth,plugdev $user_name
+#adduser --gecos "" $user_name << EOF
+#$user_pass
+#$user_pass
+#EOF
+
+#usermod -a -G sudo,audio,bluetooth,plugdev $user_name
 
 # set hostname
 echo $hostname > /etc/hostname
