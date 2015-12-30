@@ -31,6 +31,14 @@ mount -t proc proc /proc
 
 # configure packages
 
+#preseed debconf
+
+if [ -d /tmp/preseeds/ ]; then
+  for file in `ls -1 /tmp/preseeds/*`; do
+    debconf-set-selections $file
+  done
+fi
+
 # set up a few things manually
 /var/lib/dpkg/info/dash.preinst install
 
@@ -92,9 +100,12 @@ depmod -a
 # run first-run-wizard at next boot
 rm /var/lib/pyra/first-run.done
 
+# initialize apt database
+apt-get update
+
 # make sure everything is written to filesystem
 sync
 
 # reboot
 #shutdown -rn now
-reboot --force
+#reboot --force
