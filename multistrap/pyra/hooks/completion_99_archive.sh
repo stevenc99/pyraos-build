@@ -18,10 +18,21 @@ fi
 if hash pv 2>/dev/null
 then
 	SIZE=$(du -sb . | awk '{print $1}')
-	tar cf - .  | pv -s $SIZE | gzip --rsyncable > ../export/${FNAME}.tgz
+	PV="pv -s $SIZE"
 else
-	tar cf - .  | gzip --rsyncable > ../export/${FNAME}.tgz
+	PV="cat"
 fi
+
+# Create tarball with files sorted in a stable order, see
+# https://wiki.debian.org/ReproducibleBuilds/FileOrderInTarballs
+# and without timestamp in the gzip header, see
+# https://wiki.debian.org/ReproducibleBuilds/TimestampsInGzipHeaders
+find . -print0 \
+ | LC_ALL=C sort -z \
+ | tar --no-recursion --null -T - -cf - \
+ | $PV \
+ | gzip -n --best --rsyncable \
+ > ../export/${FNAME}.tgz
 
 #echo Creating ${FNAME}.tar.xz
 #tar cf - . | pv -s $SIZE | xz --block-size=16M > ../export/${FNAME}.tar.xz
