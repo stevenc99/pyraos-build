@@ -9,6 +9,12 @@ mkdir -p ../export
 FNAME=$(basename $1)
 echo Creating ${FNAME}.tgz
 
+if [ -n "$SOURCE_DATE_EPOCH" ]; then
+	# See https://wiki.debian.org/ReproducibleBuilds/TimestampsInTarball
+	find . -newermt "@$SOURCE_DATE_EPOCH" -print0 \
+	 | xargs -0r touch --no-dereference --date="@$SOURCE_DATE_EPOCH"
+fi
+
 if hash pv 2>/dev/null
 then
 	SIZE=$(du -sb . | awk '{print $1}')
