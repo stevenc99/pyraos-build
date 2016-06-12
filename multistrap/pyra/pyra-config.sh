@@ -39,6 +39,10 @@ if [ -d /tmp/preseeds/ ]; then
   done
 fi
 
+# disable daemon startup
+echo "exit 101" > /usr/sbin/policy-rc.d
+chmod +x /usr/sbin/policy-rc.d
+
 # set up a few things manually
 /var/lib/dpkg/info/dash.preinst install
 
@@ -59,6 +63,9 @@ eatmydata apt-get -f install
 # used to be 
 #dpkg --configure -a
 # but apt handles things slightly better it seems.
+
+# re-enable daemon startup
+rm -f /usr/sbin/policy-rc.d
 
 #init got replaced by a link to this script, move the real one back
 #rm /sbin/init
