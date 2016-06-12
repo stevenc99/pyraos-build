@@ -43,9 +43,20 @@ fi
 echo "exit 101" > /usr/sbin/policy-rc.d
 chmod +x /usr/sbin/policy-rc.d
 
-# set up a few things manually
-/var/lib/dpkg/info/dash.preinst install
+# run any preinst scripts that might add dpkg-divert rules
+grep -l dpkg-divert /var/lib/dpkg/info/*.preinst \
+ | while read file
+do
+	export DPKG_MAINTSCRIPT_NAME="$(basename $file)"
+	export DPKG_MAINTSCRIPT_PACKAGE="$(basename $file .preinst)"
+	echo "Running ${DPKG_MAINTSCRIPT_NAME}..."
+        $file install
 
+# :XXX: requires network access and `apt-get update` first
+#	apt-get -y --reinstall install ${DPKG_MAINTSCRIPT_PACKAGE}
+done
+
+# set up a few things manually
 dpkg --force-configure-any --configure base-passwd
 
 # base-files will fail to install if there are any files in /var/run
