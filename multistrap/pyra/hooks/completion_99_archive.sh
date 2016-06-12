@@ -7,6 +7,7 @@ cd $1
 mkdir -p ../export
 #FNAME=$(basename $1)-$NOW.tgz
 FNAME=$(basename $1)
+[ -n "$SOURCE_DATE_EPOCH" ] && FNAME="${FNAME}-${SOURCE_DATE_EPOCH}-stage1"
 echo Creating ${FNAME}.tgz
 
 if [ -n "$SOURCE_DATE_EPOCH" ]; then
